@@ -1,0 +1,15 @@
+_frida.pyd,sha256=Jx-AG5_wzaLb8Ll1Xvko7xkyFBTNSmRt1VH5XJXhNi8,70359040
+_frida/__init__.pyi,sha256=3m0lEXOlSv9WmBNsbprnoRRw3yDg8vnu-e_BOtj5SxM,16780
+_frida/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+frida-16.1.9.dist-info/COPYING,sha256=gDuLWqQVEDAiGzw_caZF2mJBk4Qh5JkBREp55cynX6g,2466
+frida-16.1.9.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+frida-16.1.9.dist-info/METADATA,sha256=__POoFOUjTceNjEY6USRgTatUKwqLo4eVnYXTImt4HI,2064
+frida-16.1.9.dist-info/RECORD,,
+frida-16.1.9.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+frida-16.1.9.dist-info/WHEEL,sha256=-EX5DQzNGQEoyL99Q-0P0-D-CXbfqafenaAeiSQ_Ufk,100
+frida-16.1.9.dist-info/top_level.txt,sha256=hIYINaco86aRnPRwHl5W92UgO9zQ4IeFLomjDZRKcHo,13
+frida/__init__.py,sha256=CF1g6gjGeLSTtq2N3sql4ydGqBIzrv1OcwlYVRYhgdw,4932
+frida/__pycache__/__init__.cpython-312.pyc,,
+frida/__pycache__/core.cpython-312.pyc,,
+frida/core.py,sha256=Friiz-riA_OWeMGx0rAAkusvSftE20eXdL-RV8-ocAI,50544
+frida/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
