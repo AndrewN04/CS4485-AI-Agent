@@ -6,27 +6,17 @@ from langchain.sql_database import SQLDatabase
 from langchain.agents.agent_types import AgentType
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
-from sqlalchemy import create_engine, inspect  # <-- added inspect here
+from sqlalchemy import create_engine, inspect
 import sqlite3
-from langchain.prompts import PromptTemplate  # <-- added for custom prompt
-import re  # <-- import regex
+from langchain.prompts import PromptTemplate
+import re
 
 st.set_page_config(page_title="Shake Shack AI Customer Agent", page_icon="🍔")
 st.title("🍔 Shake Shack AI Customer Agent")
 
-
-
 LOCALDB = "USE_LOCALDB"
-
-# User inputs
-radio_opt = ["Local Database", "Connect to your database"]
-selected_opt = st.sidebar.radio(label="Choose suitable option", options=radio_opt)
-if radio_opt.index(selected_opt) == 1:
-    db_uri = st.sidebar.text_input(
-        label="Database URI", placeholder="mysql://user:pass@hostname:port/db"
-    )
-else:
-    db_uri = LOCALDB
+# Always use local database
+db_uri = LOCALDB
 
 openai_api_key = st.sidebar.text_input(
     label="OpenAI API Key",
@@ -37,18 +27,12 @@ st.sidebar.markdown("### Frameworks in Use")
 st.sidebar.markdown("- [Streamlit Frontend Framework](https://docs.streamlit.io/)")
 st.sidebar.markdown("- [LangChain App Framework](https://python.langchain.com/docs/introduction/)")
 st.sidebar.markdown("- [OpenAI LLM Model](https://platform.openai.com/docs/)")
-st.sidebar.markdown("- [Sqlite Database](https://www.sqlite.org/docs.html)")
-
-# Check user inputs
-if not db_uri:
-    st.info("Please enter database URI to connect to your database.")
-    st.stop()
 
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.")
     st.stop()
 
-# Setup agent
+# Setup the LLM agent
 llm = OpenAI(openai_api_key=openai_api_key, temperature=0, streaming=True)
 
 @st.cache_resource(ttl="2h")
@@ -75,7 +59,7 @@ agent = create_sql_agent(
     toolkit=toolkit,
     verbose=True,
     agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    agent_kwargs={"prompt": custom_prompt}  # <-- pass your custom prompt here
+    agent_kwargs={"prompt": custom_prompt}
 )
 
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):

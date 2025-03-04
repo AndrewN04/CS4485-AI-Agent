@@ -8,7 +8,6 @@ def initialize_database():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Burgers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             price REAL NOT NULL,
             calories INTEGER NOT NULL
@@ -17,7 +16,6 @@ def initialize_database():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Chicken (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             price REAL NOT NULL,
             calories INTEGER NOT NULL
@@ -26,7 +24,6 @@ def initialize_database():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Fries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             price REAL NOT NULL,
             calories INTEGER NOT NULL
@@ -35,7 +32,6 @@ def initialize_database():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Milkshakes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             price REAL NOT NULL,
             calories INTEGER NOT NULL
@@ -44,7 +40,6 @@ def initialize_database():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Drinks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             price REAL NOT NULL,
             calories INTEGER NOT NULL
