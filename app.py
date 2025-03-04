@@ -12,7 +12,19 @@ from langchain.prompts import PromptTemplate
 import re
 
 st.set_page_config(page_title="Shake Shack AI Customer Agent", page_icon="🍔")
-st.title("🍔 Shake Shack AI Customer Agent")
+
+st.markdown(
+    """
+    <style>
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+logo_path = Path(__file__).parent / "assets" / "Shake-Shack-Logo.png"
+st.image(str(logo_path), use_container_width=True)
 
 LOCALDB = "USE_LOCALDB"
 # Always use local database
