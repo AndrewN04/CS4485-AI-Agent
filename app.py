@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from difflib import get_close_matches
 from contextlib import contextmanager
 import json
+import random
 
 # Load environment variables from a .env file (if available)
 load_dotenv()
@@ -110,6 +111,7 @@ def get_menu_by_category(category):
             ]
         except sqlite3.OperationalError:
             return []
+        
 
 def find_menu_item(item_name):
     """
@@ -231,7 +233,7 @@ def extract_quantity(text):
 
 def check_intent(user_message, keywords):
     """
-    Checks if any of the specified keywords are present in the user_message.
+    Checks if any of the specified keywords are present in the user_message, make sure it is associated with ShakeShack.
     Returns True if at least one keyword is found, otherwise False.
     """
     return any(keyword in user_message.lower() for keyword in keywords)
@@ -252,10 +254,10 @@ def check_cart_inquiry(user_message):
 def check_for_order_intent(user_message):
     """
     Determines if the user's message indicates an intent to place an order.
-    Returns True if order-related keywords are found.
+    Returns True if order-related keywords are found with a food associated in the menu
     """
     order_keywords = [
-        "order", "get", "want", "like", "have", "give me",
+        "order", "get", "want", "give me", "like",
         "i'd like", "i would like", "can i get", "can i have",
         "may i have", "i want", "i'll have", "gimme", "add"
     ]
@@ -412,12 +414,20 @@ def process_message(user_message):
                     else:
                         not_found_items.append(item_name)
                 if added_items:
-                    response = "**Added to your order:**  \n"
+                    positive_intros = [
+                        "Fantastic! I've just added those items to your order:",
+                        "Excellent choice! Your items have been added:",
+                        "Great decision! I've updated your order with the following items:",
+                        "Awesome! I've included those items in your order:"
+                    ]
+                    intro_line = random.choice(positive_intros)
+                    response = f"\"{intro_line}\"\n\n"
                     for item, quantity in added_items:
-                        response += f"- {quantity}x {item['name']} — ${item['price'] * quantity:.2f}  \n"
-                    response += f"  \n**Your total is now ${st.session_state.total_price:.2f}**"
+                        response += f"- {quantity}x {item['name']} — ${item['price'] * quantity:.2f}\n"
+                    response += f"\nYour current total is now ${st.session_state.total_price:.2f}."
+                    response += "\n\nAnything else you'd like to adjust?"
                     if not_found_items:
-                        response += f"  \n\nI couldn't find the following items on our menu: {', '.join(not_found_items)}"
+                        response += f"\n\nI couldn't find these items on our menu: {', '.join(not_found_items)}."
                     return response
                 else:
                     return "I couldn't find any of the requested items on our menu. Please check the menu and try again."
@@ -443,59 +453,9 @@ def process_message(user_message):
             except Exception as e:
                 print(f"Error in remove item: {e}")
 
-        # Check for general inquiries (hours, locations, contact info, etc.)
-        general_info_keywords = {
-            "hours": ["hours", "open time", "close time", "opening time", "closing time", "when do you open", "when do you close", "operating hours", "business hours"],
-            "locations": ["locations", "where are you", "address", "find a location", "near me", "closest", "nearest", "where is", "where can i find"],
-            "contact": ["contact", "phone number", "email", "customer service", "support", "how to contact", "reach out", "get in touch"],
-            "allergens": ["allergen", "allergies", "gluten", "dairy", "nuts", "soy", "vegetarian", "vegan", "dietary", "celiac"],
-            "nutrition": ["nutrition", "nutritional", "calories", "protein", "fat", "carbs", "sodium", "sugar", "ingredients"],
-            "catering": ["catering", "large order", "event", "party", "group order"],
-            "app": ["app", "mobile app", "rewards", "shack app", "loyalty", "points"],
-            "covid": ["covid", "coronavirus", "safety measures", "safety protocol", "mask", "vaccination"]
-        }
-        for category, keywords in general_info_keywords.items():
-            if any(keyword in user_message.lower() for keyword in keywords):
-                if category == "hours":
-                    return "Shake Shack's hours vary by location. To find the specific hours for your nearest Shake Shack, please visit the official website: [Shake Shack Locations](https://www.shakeshack.com/locations/)"
-                elif category == "locations":
-                    return "To find your nearest Shake Shack location, please visit the location finder on the official website: [Shake Shack Locations](https://www.shakeshack.com/locations/). You can search by city, state, or zip code to find Shake Shack restaurants near you."
-                elif category == "contact":
-                    return "For customer service inquiries, you can reach Shake Shack through their [Contact Page](https://www.shakeshack.com/contact-us/). For immediate assistance, you can also visit your local Shake Shack or call their customer service line available on their website."
-                elif category == "allergens":
-                    return "Shake Shack provides detailed allergen and nutritional information for all menu items. For the most up-to-date and accurate allergen information, please visit: [Shake Shack Allergen Information](https://www.shakeshack.com/allergies-nutrition/)"
-                elif category == "nutrition":
-                    return "Detailed nutritional information for all Shake Shack menu items can be found on their official website. For accurate nutritional content, please visit: [Shake Shack Nutritional Information](https://www.shakeshack.com/allergies-nutrition/)"
-                elif category == "catering":
-                    return "Shake Shack offers catering options for events and large groups. For more information about catering services and to place a catering order, please visit: [Shake Shack Catering](https://www.shakeshack.com/catering/)"
-                elif category == "app":
-                    return "The Shake Shack app allows you to order ahead, save favorites, and earn rewards. Download the app from the [App Store](https://apps.apple.com/us/app/shake-shack/id1406960590) or [Google Play](https://play.google.com/store/apps/details?id=com.shakeshack.android), or learn more on the [Shake Shack website](https://www.shakeshack.com/app/)"
-                elif category == "covid":
-                    return "For the latest information on Shake Shack's health and safety protocols, please visit their official website: [Shake Shack Safety Measures](https://www.shakeshack.com/)"
-        
         # Check if the query is related to Shake Shack by looking for menu items in the message
         menu_items = get_all_menu_items()
         contains_menu_item = any(item["name"].lower() in user_message.lower() for item in menu_items)
-
-        # Optionally, use OpenAI to classify if the query is Shake Shack-related
-        is_relevant = True
-        if not contains_menu_item:
-            try:
-                check_relevance_response = get_client().chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are a classifier that determines if a question is related to Shake Shack or not. Answer with only 'Yes' or 'No'."},
-                        {"role": "user", "content": f"Is this question related to Shake Shack? Question: {user_message}"}
-                    ],
-                    max_tokens=10
-                )
-                is_relevant = "yes" in check_relevance_response.choices[0].message.content.strip().lower()
-            except Exception as e:
-                print(f"Error checking relevance: {e}")
-                is_relevant = True
-
-        if not is_relevant:
-            return "I'm a Shake Shack customer service agent. Please ask me questions about Shake Shack's menu, locations, or services."
 
         # Prepare menu information for context to provide accurate responses
         menu_info = "Shake Shack Menu Information:\n"
@@ -640,3 +600,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
