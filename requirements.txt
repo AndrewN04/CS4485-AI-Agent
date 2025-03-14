@@ -1,5 +1,6 @@
-streamlit>=1.15.0
-langchain>=0.0.200
-SQLAlchemy>=1.4.0
-openai>=0.27.0
+streamlit
+openai
+python-dotenv
+langchain
+sqlite3
 langchain_community

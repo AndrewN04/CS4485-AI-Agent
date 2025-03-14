@@ -5,11 +5,11 @@ GPT Querying, use a local database or connect one through the WebUI
 ## Installation
 ### Prerequisites:
 - Python 3.8 and above
-- [OpenAI API key](https://platform.openai.com/account/api-keys) (Basic LLM such as Llama3 should be fine)
+- [OpenAI API key](https://platform.openai.com/account/api-keys) (Can be cloned and replace with basic LLM such as Llama3)
 
 #### 1) Clone repo
 
-#### 2) Create virtual env (e.g. [venv](https://docs.python.org/3/library/venv.html))
+#### 2) (Optional) Create virtual env (e.g. [venv](https://docs.python.org/3/library/venv.html))
 
 #### 3) Install required python packages via pip
 ```bash
