@@ -565,7 +565,7 @@ def main():
         st.sidebar.write("Your order is empty.")
 
     # --- Main Chat Interface ---
-    st.title("Shake Shack Customer Support Chat")
+    st.image("assets/Shake-Shack-Logo.png")
     st.write("Welcome to Shake Shack! Ask me about our menu, place an order, or get help with anything Shake Shack related.")
 
     # Display the chat history using Streamlit's chat_message for consistent formatting
