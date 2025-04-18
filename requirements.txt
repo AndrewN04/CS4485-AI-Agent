@@ -5,3 +5,4 @@ langchain
 langchain_community
 pymongo
 uuid
+dnspython

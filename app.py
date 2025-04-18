@@ -27,15 +27,9 @@ st.markdown(
 
 # MongoDB connection string from Streamlit secrets or environment variables
 def get_mongodb_uri():
-    # In development: use local .env if available
-    if os.getenv("MONGODB_URI"):
-        return os.getenv("MONGODB_URI")
-    # In production: use Streamlit secrets
-    try:
-        return st.secrets["MONGODB_URI"]
-    except KeyError:
-        st.error("MongoDB connection string not found. Please check your configuration.")
-        return None
+    base_uri = os.getenv("MONGODB_URI") or st.secrets["MONGODB_URI"]
+    # Add SSL configuration
+    return f"{base_uri}?ssl=true&tlsAllowInvalidCertificates=true"
 
 # -----------------------------------------------------------------------------
 # Helper: OpenAI Client Getter
@@ -77,18 +71,26 @@ for state_var in ['order', 'total_price', 'chat_history', 'menu_cache', 'last_re
 # -----------------------------------------------------------------------------
 # Database Functions
 # -----------------------------------------------------------------------------
-@contextmanager
 def get_db_connection():
-    """Context manager for MongoDB connection."""
-    mongodb_uri = get_mongodb_uri()
-    if not mongodb_uri:
-        raise Exception("MongoDB connection string not available")
-    
-    client = MongoClient(mongodb_uri)
     try:
-        yield client["shakeshack"]  # database name
-    finally:
-        client.close()
+        mongodb_uri = get_mongodb_uri()
+        if not mongodb_uri:
+            st.error("MongoDB URI is not configured.")
+            return None
+
+        client = MongoClient(mongodb_uri, 
+            ssl=True,
+            tlsAllowInvalidCertificates=True,
+            socketTimeoutMS=30000,
+            connectTimeoutMS=30000)
+        
+        # Test connection
+        client.admin.command('ismaster')
+        return client["shakeshack"]
+    except Exception as e:
+        st.error(f"MongoDB Connection Error: {e}")
+        st.error("Please check your connection string and network settings.")
+        return None
 
 def get_all_menu_items():
     """Retrieves all menu items from MongoDB with caching."""
