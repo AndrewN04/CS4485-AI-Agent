@@ -4,6 +4,4 @@ python-dotenv
 langchain
 langchain_community
 pymongo
-difflib
-contextlib
 uuid
