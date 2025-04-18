@@ -654,30 +654,13 @@ def main():
     # Check if we have an environment API key
     has_env_key = bool(os.getenv("OPENAI_API_KEY"))
     
-    # Information about API key usage
-    if has_env_key:
-        st.sidebar.markdown("""
-        A default API key is configured, but you can provide your own for personalized service.
-        
-        Your key is securely stored in your browser's session and isn't saved on our servers.
-        
-        [Get an API key here](https://platform.openai.com/api-keys)
-        """)
-    else:
-        st.sidebar.markdown("""
-        This app requires an OpenAI API key to function. 
-        Your key is securely stored in your browser's session and isn't saved on our servers.
-        
-        [Get an API key here](https://platform.openai.com/api-keys)
-        """)
     
     # API key input
-    api_key_input = st.sidebar.text_input("Enter your OpenAI API Key (optional)" if has_env_key else "Enter your OpenAI API Key", 
+    api_key_input = st.sidebar.text_input("Enter your OpenAI API Key (ENV Key found)" if has_env_key else "Enter your OpenAI API Key", 
                                         type="password")
     if api_key_input:
         st.session_state.openai_api_key = api_key_input
-        st.sidebar.success("API key set successfully!")
-
+        
     # --- Sidebar: Order Summary ---
     st.sidebar.title("Order Summary")
     if st.session_state.order:
