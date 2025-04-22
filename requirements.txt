@@ -2,6 +2,8 @@ streamlit
 openai
 python-dotenv
 langchain
-langchain_community
+langchain-community
 pymongo
 uuid
+langchain-openai
+

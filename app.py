@@ -1,17 +1,37 @@
 import streamlit as st
 import os
 import re
-from openai import OpenAI
-from difflib import get_close_matches
 from contextlib import contextmanager
 import json
 import random
+import functools
+import logging
 import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
+# LangChain imports
+from langchain_community.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, PromptTemplate
+from langchain.chains import LLMChain
+from langchain.chains.router import MultiPromptChain
+from langchain.chains.router.llm_router import LLMRouterChain
+from langchain.memory import ConversationBufferMemory
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+
 # Load environment variables from .env file if it exists
 load_dotenv()
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("shakeshack_agent.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
 # Configuration & Environment Variables
@@ -24,6 +44,39 @@ st.markdown(
     """<style>header {visibility: hidden;} footer {visibility: hidden;}</style>""",
     unsafe_allow_html=True
 )
+
+# Decorator for LLM error handling
+def llm_error_handler(default_return=None, error_message=None):
+    """Decorator for handling LLM chain errors consistently."""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                error_type = type(e).__name__
+                error_details = str(e)
+                logger.error(f"Error in {func.__name__}: {error_type} - {error_details}")
+                
+                # Provide specific user-friendly messages based on error type
+                if "Unauthorized" in error_details:
+                    return "There seems to be an issue with the API key. Please check that your API key is valid."
+                elif "Connection" in error_details or "Timeout" in error_details:
+                    return "I'm having trouble connecting to the language model service. Please check your internet connection and try again."
+                elif "JSON" in error_type or "parsing" in error_details.lower():
+                    return "I had trouble processing the response format. Please try rephrasing your request."
+                
+                # Use the provided error message if available
+                if error_message:
+                    return error_message
+                
+                # Use the default return value if provided
+                if isinstance(default_return, str):
+                    return f"I'm having trouble processing your request. {default_return}"
+                
+                return default_return
+        return wrapper
+    return decorator
 
 # MongoDB connection string from Streamlit secrets or environment variables
 def get_mongodb_uri():
@@ -38,11 +91,11 @@ def get_mongodb_uri():
         return None
 
 # -----------------------------------------------------------------------------
-# Helper: OpenAI Client Getter
+# Helper: LangChain Chat Model Getter
 # -----------------------------------------------------------------------------
-def get_client():
+def get_llm():
     """
-    Returns an instance of the OpenAI client.
+    Returns an instance of the LangChain ChatOpenAI model.
     Priority:
     1. User-provided API key (via the UI)
     2. API key from environment variables or .env file
@@ -50,16 +103,22 @@ def get_client():
     # First check if user provided an API key through the UI
     key = st.session_state.get("openai_api_key")
     if key:
-        return OpenAI(api_key=key)
+        return ChatOpenAI(api_key=key, model_name="gpt-4", temperature=0.5)
     
     # Otherwise, try to get the API key from environment variables (.env)
     env_key = os.getenv("OPENAI_API_KEY")
     if env_key:
-        return OpenAI(api_key=env_key)
+        return ChatOpenAI(api_key=env_key, model_name="gpt-4", temperature=0.5)
     
-    # If neither is available, show a warning
-    st.warning("Please provide an OpenAI API key to use the chat functionality.")
+    # If neither is available, return None
     return None
+
+# Get or create conversation memory
+def get_conversation_memory():
+    """Get or create a conversation memory object from session state."""
+    if "conversation_memory" not in st.session_state:
+        st.session_state.conversation_memory = ConversationBufferMemory(memory_key="chat_history")
+    return st.session_state.conversation_memory
 
 # -----------------------------------------------------------------------------
 # Global Constants & Session State Initialization
@@ -90,6 +149,7 @@ def get_db_connection():
     finally:
         client.close()
 
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def get_all_menu_items():
     """Retrieves all menu items from MongoDB with caching."""
     if st.session_state.menu_cache is not None:
@@ -101,6 +161,7 @@ def get_all_menu_items():
             st.session_state.menu_cache = all_items
             return all_items
     except Exception as e:
+        logger.error(f"Error retrieving menu items: {e}")
         st.error(f"Error retrieving menu items: {e}")
         return []
 
@@ -109,105 +170,85 @@ def get_menu_by_category(category):
     try:
         with get_db_connection() as db:
             return list(db.menu_items.find({"category": category}, {"_id": 0}))
-    except Exception:
-        return []
-
-def find_menu_item(item_name):
-    """Finds a menu item by name with progressive matching strategies."""
-    if not item_name or not isinstance(item_name, str):
-        return None
-    
-    search_name = item_name.lower()
-    words = search_name.split()
-    
-    try:
-        with get_db_connection() as db:
-            # Strategy 1: Exact match (case insensitive)
-            item = db.menu_items.find_one(
-                {"name": {"$regex": f"^{search_name}$", "$options": "i"}}, 
-                {"_id": 0}
-            )
-            if item:
-                return item
-            
-            # Strategy 2: Sequential word match (for multi-word items)
-            if len(words) > 1:
-                regex_pattern = ".*".join([re.escape(word) for word in words])
-                item = db.menu_items.find_one(
-                    {"name": {"$regex": f".*{regex_pattern}.*", "$options": "i"}}, 
-                    {"_id": 0}
-                )
-                if item:
-                    return item
-            
-            # Strategy 3: Partial match
-            item = db.menu_items.find_one(
-                {"name": {"$regex": search_name, "$options": "i"}}, 
-                {"_id": 0}
-            )
-            if item:
-                return item
-            
-            # Strategy 4: Text search if available
-            try:
-                item = db.menu_items.find_one(
-                    {"$text": {"$search": search_name}},
-                    {"_id": 0, "score": {"$meta": "textScore"}}
-                )
-                if item:
-                    return item
-            except pymongo.errors.OperationFailure:
-                pass
     except Exception as e:
-        st.error(f"Database error while finding menu item: {e}")
+        logger.error(f"Error retrieving menu items by category: {e}")
+        return []
+    
+def display_formatted_menu():
+    """
+    Returns a nicely formatted menu for display to the user.
+    This is separate from prepare_menu_info which is for LLM prompts.
+    """
+    menu_items = get_all_menu_items()
+    menu_by_category = {}
+    for item in menu_items:
+        category = item["category"]
+        if category not in menu_by_category:
+            menu_by_category[category] = []
+        menu_by_category[category].append(item)
+    
+    formatted_menu = "# Shake Shack Menu\n\n"
+    for category, items in menu_by_category.items():
+        formatted_menu += f"## {category}\n\n"
+        for item in items:
+            formatted_menu += f"- **{item['name']}** — ${item['price']:.2f} ({item['calories']} calories)\n"
+        formatted_menu += "\n"
+    
+    return formatted_menu
+
+def prepare_menu_info():
+    """Prepare formatted menu information for prompts."""
+    menu_items = get_all_menu_items()
+    menu_by_category = {}
+    for item in menu_items:
+        category = item["category"]
+        if category not in menu_by_category:
+            menu_by_category[category] = []
+        menu_by_category[category].append(item)
+    
+    menu_info = "Shake Shack Menu Information:\n"
+    for category, items in menu_by_category.items():
+        menu_info += f"\n{category}:\n"
+        for item in items:
+            menu_info += f"- {item['name']}: ${item['price']:.2f}, {item['calories']} calories\n"
+    
+    return menu_info
+
+@llm_error_handler(default_return=None)
+def find_menu_item_langchain(item_description):
+    """Uses LangChain to find the most likely menu item match."""
+    llm = get_llm()
+    if not llm:
         return None
-                
-    # Strategy 5: Advanced matching with all menu items
+    
+    # Get all menu items for context
     all_items = get_all_menu_items()
+    menu_json = json.dumps([{"name": item["name"], "category": item["category"]} for item in all_items])
     
-    # Check for all words in item name (unordered)
+    system_template = """
+    You are given a user's description of a menu item at Shake Shack and a list of actual menu items.
+    Find the menu item that best matches the user's description.
+    
+    Available menu items:
+    {menu_items}
+    
+    Return ONLY the exact name of the matching menu item. If no good match is found, return "NO_MATCH".
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    matched_name = chain.run(input=item_description, menu_items=menu_json).strip()
+    
+    if matched_name == "NO_MATCH":
+        return None
+    
+    # Find the full item details from the matched name
     for item in all_items:
-        item_lower = item["name"].lower()
-        if all(word in item_lower for word in words):
+        if item["name"].lower() == matched_name.lower():
             return item
-            
-    # Strategy 6: Most words match
-    if len(words) > 1:
-        matches = []
-        for item in all_items:
-            item_lower = item["name"].lower()
-            match_count = sum(1 for word in words if word in item_lower)
-            if match_count > 0:
-                matches.append((item, match_count))
-        
-        if matches:
-            matches.sort(key=lambda x: x[1], reverse=True)
-            return matches[0][0]
-            
-    # Strategy 7: Keyword matching
-    keyword_categories = {
-        "burger": ["burger", "hamburger", "cheeseburger", "shackburger"],
-        "shake": ["shake", "milkshake", "custard"],
-        "fries": ["fries", "fry", "crinkle"],
-        "chicken": ["chicken", "chick", "bird"],
-        "lemonade": ["lemonade", "shackmade"],
-        "tea": ["tea", "iced tea", "ice tea", "organic"],
-        "hot dog": ["hot dog", "hotdog", "dog"],
-        "drink": ["drink", "soda", "beverage", "tea", "lemonade"]
-    }
     
-    for category, keywords in keyword_categories.items():
-        if any(keyword in search_name for keyword in keywords):
-            matching_items = [item for item in all_items if any(keyword in item["name"].lower() for keyword in keywords)]
-            if matching_items:
-                menu_item_names = [item["name"].lower() for item in matching_items]
-                closest_matches = get_close_matches(search_name, menu_item_names, n=1, cutoff=0.1)
-                if closest_matches:
-                    closest_match = closest_matches[0]
-                    for item in matching_items:
-                        if item["name"].lower() == closest_match:
-                            return item
-                return matching_items[0]
     return None
 
 def get_menu_categories():
@@ -224,82 +265,8 @@ def get_menu_categories():
         return MENU_CATEGORIES
 
 # -----------------------------------------------------------------------------
-# Message & Order Handling Functions
+# Order Management Functions
 # -----------------------------------------------------------------------------
-def extract_quantity(text):
-    """Extracts quantity from text."""
-    # Number pattern (e.g., "2 burgers")
-    quantity_pattern = r'\b(\d+)\s+'
-    match = re.search(quantity_pattern, text.lower())
-    if match:
-        return int(match.group(1)), text[match.end():]
-
-    # Text number pattern (e.g., "two burgers")
-    text_lower = text.lower()
-    text_number_map = {
-        "a ": 1, "an ": 1, "one ": 1, "two ": 2, "three ": 3, "four ": 4, "five ": 5,
-        "six ": 6, "seven ": 7, "eight ": 8, "nine ": 9, "ten ": 10
-    }
-    for text_num, value in text_number_map.items():
-        if text_lower.startswith(text_num):
-            return value, text_lower[len(text_num):]
-    return 1, text
-
-def check_intent(user_message, keywords):
-    """Checks if user message contains any keywords."""
-    return any(keyword in user_message.lower() for keyword in keywords)
-
-def check_cart_inquiry(user_message):
-    """Checks if user is asking about their order/cart."""
-    cart_keywords = [
-        "cart", "order", "basket", "what's in my order", "what is in my order",
-        "what have i ordered", "view my order", "view order", "check order",
-        "what's in my cart", "what is in my cart", "check my order", "show me my order",
-        "show order", "current order", "see my order", "see order", "total"
-    ]
-    return check_intent(user_message, cart_keywords)
-
-def check_for_order_intent(user_message):
-    """Checks if user wants to place an order."""
-    order_keywords = [
-        "order", "get", "want", "give me", "like",
-        "i'd like", "i would like", "can i get", "can i have",
-        "may i have", "i want", "i'll have", "gimme", "add"
-    ]
-    return check_intent(user_message, order_keywords)
-
-def check_price_inquiry(user_message):
-    """Checks if user is asking about item price."""
-    price_keywords = ["how much", "price", "cost", "how many", "what is the price", "what's the price"]
-    if not check_intent(user_message, price_keywords):
-        return None
-
-    # Direct item match in message
-    menu_items = get_all_menu_items()
-    for item in menu_items:
-        if item["name"].lower() in user_message.lower():
-            return item
-
-    # Use OpenAI to extract item name
-    client = get_client()
-    if not client:
-        return None
-        
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Extract the name of the Shake Shack menu item the user is asking about. Return only the item name."},
-                {"role": "user", "content": user_message}
-            ],
-            max_tokens=50
-        )
-        item_name = response.choices[0].message.content.strip()
-        return find_menu_item(item_name)
-    except Exception as e:
-        print(f"Error extracting item name: {e}")
-        return None
-
 def get_order_summary():
     """Generates summary of current order."""
     if not st.session_state.order:
@@ -383,126 +350,256 @@ def remove_from_order(item_name):
             st.session_state.total_price -= removed_item["price"] * quantity
             quantity_text = f"{quantity}x " if quantity > 1 else ""
             response = f"**Removed from your order:**  \n- {quantity_text}{removed_item['name']}  \n  \n**Your total is now ${st.session_state.total_price:.2f}**"
-            st.session_state.last_response = response
             st.session_state.update_sidebar = True
-            st.rerun()
             return response
     return f"I couldn't find '{item_name}' in your current order."
 
+# -----------------------------------------------------------------------------
+# LangChain Intent Classification
+# -----------------------------------------------------------------------------
+@llm_error_handler(default_return="unknown")
+def classify_intent(user_message):
+    """Uses LangChain to classify the intent of the user message."""
+    llm = get_llm()
+    if not llm:
+        return "unknown"
+    
+    system_template = """
+    Classify the user's message into ONE of the following intents:
+    - cart_inquiry: User is asking about their current order/cart
+    - order_placement: User wants to place or add to an order
+    - quantity_update: User wants to change the quantity of an item
+    - price_inquiry: User is asking about the price of an item
+    - remove_item: User wants to remove an item from their order
+    - general_question: User is asking a general question about Shake Shack
+    
+    Return ONLY the intent label, nothing else.
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    intent = chain.run(input=user_message).strip().lower()
+    
+    return intent
+
+# -----------------------------------------------------------------------------
+# LangChain Item Extraction
+# -----------------------------------------------------------------------------
+@llm_error_handler(default_return=[])
 def extract_order_items(user_message):
-    """Extracts menu items and quantities from user message."""
-    # Check for OpenAI API key
-    client = get_client()
-    if not client:
+    """Extracts menu items and quantities from user message using LangChain."""
+    llm = get_llm()
+    if not llm:
         return []
         
-    # Try OpenAI JSON extraction
+    # Create extraction chain
+    system_template = """
+    You are a specialized parser for Shake Shack orders.
+    Extract ALL menu items with their quantities from the following order.
+    Use the EXACT names as in the menu: for example, "Shackmade Lemonade", "Organic Ice Tea", "Hot Dog", "ShackBurger", etc.
+    Return only a JSON object in the following format (do not include any additional text):
+    {"items": [{"name": "Shackmade Lemonade", "quantity": 2}, {"name": "Organic Ice Tea", "quantity": 1}, {"name": "Hot Dog", "quantity": 1}, {"name": "ShackBurger", "quantity": 1}]}
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    extracted_text = chain.run(input=user_message).strip()
+    
     try:
-        extraction_response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": """
-You are a specialized parser for Shake Shack orders.
-Extract ALL menu items with their quantities from the following order.
-Use the EXACT names as in the menu: for example, "Shackmade Lemonade", "Organic Ice Tea", "Hot Dog", "ShackBurger", etc.
-Return only a JSON object in the following format (do not include any additional text):
-{"items": [{"name": "Shackmade Lemonade", "quantity": 2}, {"name": "Organic Ice Tea", "quantity": 1}, {"name": "Hot Dog", "quantity": 1}, {"name": "ShackBurger", "quantity": 1}]}
-"""},            
-                {"role": "user", "content": user_message}
-            ],
-            max_tokens=300
-        )
-        extracted_text = extraction_response.choices[0].message.content.strip()
         items_data = json.loads(extracted_text)
         if "items" in items_data and len(items_data["items"]) > 0:
             return items_data["items"]
     except Exception as e:
-        print(f"Error extracting order items: {e}")
+        logger.error(f"Error parsing extracted items JSON: {e}")
+    
+    return []
 
-    # Fallback extraction
+@llm_error_handler(default_return=(False, None, None))
+def process_quantity_update(user_message):
+    """Uses LangChain to process quantity update requests."""
+    llm = get_llm()
+    if not llm:
+        return False, None, None
+    
+    # Create a list of current order items for context
+    current_items = ", ".join([item["name"] for item in st.session_state.order])
+    
+    system_template = """
+    Determine if the user is trying to update the quantity of an item in their order.
+    
+    Current order items: {current_items}
+    
+    If the user is updating a quantity, extract:
+    1. The item name they want to update
+    2. The new quantity
+    
+    Return in JSON format:
+    {"is_update": true/false, "item_name": "item name", "quantity": number}
+    
+    If not a quantity update, return:
+    {"is_update": false, "item_name": null, "quantity": null}
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    result_json = chain.run(input=user_message, current_items=current_items).strip()
+    
     try:
-        quantity, remaining_text = extract_quantity(user_message)
-        item_extraction_response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Extract the name of the Shake Shack menu item the user wants to order. Return only the item name."},
-                {"role": "user", "content": remaining_text}
-            ],
-            max_tokens=50
-        )
-        item_name = item_extraction_response.choices[0].message.content.strip()
-        return [{"name": item_name, "quantity": quantity}]
+        result = json.loads(result_json)
+        return result["is_update"], result["item_name"], result["quantity"]
     except Exception as e:
-        print(f"Error in fallback extraction: {e}")
-        return []
-
-def check_for_quantity_update(user_message):
-    """
-    Checks if the user message is a request to update item quantity.
-    Returns a tuple of (True/False, item_name, new_quantity) if detected.
-    """
-    # Keywords that might indicate quantity update
-    quantity_update_keywords = ["make", "change", "update", "only", "just", "instead", "reduce", "increase"]
-    
-    # Check if any keyword is present
-    has_update_keyword = any(keyword in user_message.lower() for keyword in quantity_update_keywords)
-    
-    # If no keyword is found, return False
-    if not has_update_keyword:
+        logger.error(f"Error parsing quantity update JSON: {e}")
         return False, None, None
-        
-    # Extract quantity
-    quantity_pattern = r'\b([1-9][0-9]?)\b'  # Match numbers 1-99
-    match = re.search(quantity_pattern, user_message)
-    if not match:
-        return False, None, None
-        
-    new_quantity = int(match.group(1))
-    
-    # If we have only one item in the order, it's likely this item
-    if len(st.session_state.order) == 1:
-        return True, st.session_state.order[0]["name"], new_quantity
-    
-    # Otherwise, try to extract the item name
-    client = get_client()
-    if client:
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "The user is changing the quantity of a menu item at Shake Shack. Extract the name of the item. Return only the item name."},
-                    {"role": "user", "content": user_message + "\n\nCurrent order: " + ", ".join([item["name"] for item in st.session_state.order])}
-                ],
-                max_tokens=50
-            )
-            item_name = response.choices[0].message.content.strip()
-            return True, item_name, new_quantity
-        except Exception as e:
-            print(f"Error extracting item name for quantity update: {e}")
-    
-    # If we couldn't determine the item, return True but with None for item_name
-    return True, None, new_quantity
 
+@llm_error_handler(default_return=None)
+def extract_item_to_remove(user_message):
+    """Uses LangChain to extract the item to remove from an order."""
+    llm = get_llm()
+    if not llm:
+        return None
+    
+    # Create a list of current order items for context
+    current_items = ", ".join([item["name"] for item in st.session_state.order])
+    
+    system_template = """
+    The user wants to remove an item from their Shake Shack order.
+    Extract the name of the item they want to remove.
+    
+    Current order items: {current_items}
+    
+    Return ONLY the name of the item to remove, nothing else.
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    item_name = chain.run(input=user_message, current_items=current_items).strip()
+    
+    return item_name
+
+@llm_error_handler(default_return=None)
+def extract_price_inquiry_item(user_message):
+    """Uses LangChain to extract the item name from a price inquiry."""
+    llm = get_llm()
+    if not llm:
+        return None
+    
+    # Direct item match in message
+    menu_items = get_all_menu_items()
+    for item in menu_items:
+        if item["name"].lower() in user_message.lower():
+            return item
+    
+    # Create item extraction chain
+    system_template = """
+    Extract the name of the Shake Shack menu item the user is asking about the price of.
+    Return ONLY the item name, nothing else.
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = LLMChain(llm=llm, prompt=chat_prompt)
+    item_name = chain.run(input=user_message).strip()
+    
+    # Find the item in the menu
+    return find_menu_item_langchain(item_name)
+
+# -----------------------------------------------------------------------------
+# LangChain Conversation
+# -----------------------------------------------------------------------------
+def create_shake_shack_chain():
+    """Creates a LangChain chain for general Shake Shack conversations."""
+    llm = get_llm()
+    if not llm:
+        return None
+    
+    # Use centralized menu info preparation
+    menu_info = prepare_menu_info()
+
+    # Create system template with menu and order info
+    system_template = """
+    You are a helpful and knowledgeable customer service agent for Shake Shack. You answer questions about Shake Shack's menu, 
+    locations, ordering process, and general information about Shake Shack. If the user asks about anything 
+    not related to Shake Shack, politely redirect them to ask questions about Shake Shack instead.
+
+    Current User Order: {order}
+    Total Price: ${total_price:.2f}
+
+    When answering questions about menu items, prices, or nutritional information, use ONLY the following 
+    accurate menu information from the database:
+
+    {menu_info}
+
+    Do not make up prices or nutritional information. If the user asks about an item not listed above,
+    tell them you don't have information about that specific item.
+
+    For general information that's not in the menu database:
+    - If asked about store hours, direct users to: https://www.shakeshack.com/locations/
+    - If asked about locations or finding nearby stores: https://www.shakeshack.com/locations/
+    - If asked about allergens or nutritional information beyond calories: https://www.shakeshack.com/allergies-nutrition/
+    - If asked about catering or large orders: https://www.shakeshack.com/catering/
+    - For customer service or contact information: https://www.shakeshack.com/contact-us/
+    - For app or rewards program questions: https://www.shakeshack.com/app/
+
+    Be friendly and helpful. If you don't know specific information, it's better to provide a link to the official
+    Shake Shack website rather than guessing.
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    # Use persistent memory from session state
+    memory = get_conversation_memory()
+    
+    return LLMChain(
+        llm=llm, 
+        prompt=chat_prompt,
+        memory=memory,
+        verbose=True
+    )
+    
+# -----------------------------------------------------------------------------
+# Main Message Processing
+# -----------------------------------------------------------------------------
+@llm_error_handler(
+    default_return="I'm having trouble processing your request. Please try again.", 
+    error_message="I'm having trouble connecting to our systems. Please try again in a moment."
+)
 def process_message(user_message):
-    """Processes user message and generates appropriate response."""
-    # Check for OpenAI API key in session or environment
-    client = get_client()
-    if not client:
+    """Processes user message and generates appropriate response using LangChain intent classification."""
+    # Check for OpenAI API key
+    llm = get_llm()
+    if not llm:
         if os.getenv("OPENAI_API_KEY"):
             # If there's an API key in the environment but not the session
             return "Using default API key. For personalized service, you can provide your own OpenAI API key in the sidebar."
         else:
             # No API key available anywhere
             return "Please provide your OpenAI API key in the sidebar to use the chat functionality."
-        
-    try:
-        # Cart inquiry
-        if check_cart_inquiry(user_message):
-            return get_order_summary()
-
-        # Check for quantity update request
-        is_quantity_update, item_name, new_quantity = check_for_quantity_update(user_message)
-        if is_quantity_update and st.session_state.order:
+    
+    # Classify the user's intent
+    intent = classify_intent(user_message)
+    logger.info(f"Classified intent: {intent}")
+    
+    # Special case handling for menu requests
+    if "menu" in user_message.lower():
+        return f"Here's our current menu:\n\n{prepare_menu_info()}"
+    
+    # Handle based on intent
+    if intent == "cart_inquiry":
+        return get_order_summary()
+    
+    elif intent == "quantity_update":
+        is_update, item_name, new_quantity = process_quantity_update(user_message)
+        if is_update and new_quantity is not None:
             if item_name:
                 # We have identified both the item and quantity
                 return update_order_quantity(item_name, new_quantity)
@@ -512,136 +609,92 @@ def process_message(user_message):
             else:
                 # Multiple items but couldn't identify which one
                 return "I'm not sure which item you want to change. Please specify the item name."
-
-        # Order placement
-        if check_for_order_intent(user_message):
-            extracted_items = extract_order_items(user_message)
-            if extracted_items:
-                added_items = []
-                not_found_items = []
+    
+    elif intent == "order_placement":
+        extracted_items = extract_order_items(user_message)
+        if extracted_items:
+            added_items = []
+            not_found_items = []
+            
+            for item_data in extracted_items:
+                item_name = item_data.get("name", "")
+                item_quantity = item_data.get("quantity", 1)
+                menu_item = find_menu_item_langchain(item_name)
                 
-                for item_data in extracted_items:
-                    item_name = item_data.get("name", "")
-                    item_quantity = item_data.get("quantity", 1)
-                    menu_item = find_menu_item(item_name)
-                    
-                    if menu_item:
-                        add_to_order(menu_item, item_quantity)
-                        added_items.append((menu_item, item_quantity))
-                    else:
-                        not_found_items.append(item_name)
-                
-                if added_items:
-                    # Set flag to update the sidebar since items were added
-                    st.session_state.update_sidebar = True
-                    
-                    intro_line = random.choice([
-                        "Fantastic! I've just added those items to your order:",
-                        "Excellent choice! Your items have been added:",
-                        "Great decision! I've updated your order with the following items:",
-                        "Awesome! I've included those items in your order:"
-                    ])
-                    
-                    response = f"\"{intro_line}\"\n\n"
-                    for item, quantity in added_items:
-                        response += f"- {quantity}x {item['name']} — ${item['price'] * quantity:.2f}\n"
-                    
-                    response += f"\nYour current total is now ${st.session_state.total_price:.2f}."
-                    response += "\n\nAnything else you'd like to adjust?"
-                    
-                    if not_found_items:
-                        response += f"\n\nI couldn't find these items on our menu: {', '.join(not_found_items)}."
-                    
-                    return response
+                if menu_item:
+                    add_to_order(menu_item, item_quantity)
+                    added_items.append((menu_item, item_quantity))
                 else:
-                    return "I couldn't find any of the requested items on our menu. Please check the menu and try again."
-
-        # Price inquiry
-        price_item = check_price_inquiry(user_message)
+                    not_found_items.append(item_name)
+            
+            if added_items:
+                # Set flag to update the sidebar since items were added
+                st.session_state.update_sidebar = True
+                
+                intro_line = random.choice([
+                    "Fantastic! I've just added those items to your order:",
+                    "Excellent choice! Your items have been added:",
+                    "Great decision! I've updated your order with the following items:",
+                    "Awesome! I've included those items in your order:"
+                ])
+                
+                response = f"\"{intro_line}\"\n\n"
+                for item, quantity in added_items:
+                    response += f"- {quantity}x {item['name']} — ${item['price'] * quantity:.2f}\n"
+                
+                response += f"\nYour current total is now ${st.session_state.total_price:.2f}."
+                response += "\n\nAnything else you'd like to adjust?"
+                
+                if not_found_items:
+                    response += f"\n\nI couldn't find these items on our menu: {', '.join(not_found_items)}."
+                
+                return response
+            else:
+                return "I couldn't find any of the requested items on our menu. Please check the menu and try again."
+    
+    elif intent == "price_inquiry":
+        price_item = extract_price_inquiry_item(user_message)
         if price_item:
             return f"The {price_item['name']} costs ${price_item['price']:.2f} and contains {price_item['calories']} calories."
-
-        # Remove item
-        if "remove" in user_message.lower():
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "Extract the name of the Shake Shack menu item the user wants to remove. Return only the item name."},
-                        {"role": "user", "content": user_message}
-                    ],
-                    max_tokens=50
-                )
-                item_name = response.choices[0].message.content.strip()
-                return remove_from_order(item_name)
-            except Exception as e:
-                print(f"Error in remove item: {e}")
-                return "I'm having trouble understanding which item you want to remove. Could you please specify the exact item name?"
-
-        # General conversation with OpenAI
-        # Prepare menu information
-        menu_items = get_all_menu_items()
-        menu_by_category = {}
-        for item in menu_items:
-            category = item["category"]
-            if category not in menu_by_category:
-                menu_by_category[category] = []
-            menu_by_category[category].append(item)
-        
-        menu_info = "Shake Shack Menu Information:\n"
-        for category, items in menu_by_category.items():
-            menu_info += f"\n{category}:\n"
-            for item in items:
-                menu_info += f"- {item['name']}: ${item['price']:.2f}, {item['calories']} calories\n"
-
-        # Current order summary
-        order_items = [
-            f"{item.get('quantity', 1)}x {item['name']}" if item.get('quantity', 1) > 1 else item['name']
-            for item in st.session_state.order
-        ]
-        order_str = ", ".join(order_items) if order_items else "None"
-
-        # Generate response with OpenAI
-        try:
-            completion = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": f"""
-You are a helpful and knowledgeable customer service agent for Shake Shack. You answer questions about Shake Shack's menu, 
-locations, ordering process, and general information about Shake Shack. If the user asks about anything 
-not related to Shake Shack, politely redirect them to ask questions about Shake Shack instead.
-
-Current User Order: {order_str}
-Total Price: ${st.session_state.total_price:.2f}
-
-When answering questions about menu items, prices, or nutritional information, use ONLY the following 
-accurate menu information from the database:
-
-{menu_info}
-
-Do not make up prices or nutritional information. If the user asks about an item not listed above,
-tell them you don't have information about that specific item.
-
-For general information that's not in the menu database:
-- If asked about store hours, direct users to: https://www.shakeshack.com/locations/
-- If asked about locations or finding nearby stores: https://www.shakeshack.com/locations/
-- If asked about allergens or nutritional information beyond calories: https://www.shakeshack.com/allergies-nutrition/
-- If asked about catering or large orders: https://www.shakeshack.com/catering/
-- For customer service or contact information: https://www.shakeshack.com/contact-us/
-- For app or rewards program questions: https://www.shakeshack.com/app/
-
-Be friendly and helpful. If you don't know specific information, it's better to provide a link to the official
-Shake Shack website rather than guessing.
-"""}, 
-                    {"role": "user", "content": user_message}
-                ]
-            )
-            return completion.choices[0].message.content
-        except Exception as e:
-            print(f"Error in general conversation: {e}")
-            return "I'm having trouble processing your request. Please try again."
+        return "I'm not sure which item you're asking about. Could you please specify the name of the menu item?"
+    
+    elif intent == "remove_item":
+        item_name = extract_item_to_remove(user_message)
+        if item_name:
+            return remove_from_order(item_name)
+        return "I'm not sure which item you want to remove. Could you please specify the exact item name?"
+    
+    # General conversation (default fallback)
+    shake_shack_chain = create_shake_shack_chain()
+    
+    # Create order summary for the chain context
+    order_items = [
+        f"{item.get('quantity', 1)}x {item['name']}" if item.get('quantity', 1) > 1 else item['name']
+        for item in st.session_state.order
+    ]
+    order_str = ", ".join(order_items) if order_items else "None"
+    
+    # Use centralized menu info preparation
+    menu_info = prepare_menu_info()
+    
+    # Run the general conversation chain
+    try:
+        # Make sure we have the correct input variables that match the prompt template
+        response = shake_shack_chain.run(
+            input=user_message,
+            order=order_str,
+            total_price=st.session_state.total_price,
+            menu_info=menu_info
+        )
+        return response
     except Exception as e:
-        return f"I'm having trouble processing your request. Please try again. Error details: {str(e)}"
+        logger.error(f"Error in general conversation: {e}")
+        
+        # If there's an error with the chain, handle common requests directly
+        if "menu" in user_message.lower():
+            return f"Here's our menu:\n\n{menu_info}"
+        
+        return "I'm having trouble processing your request. Please try again."
 
 # -----------------------------------------------------------------------------
 # Main Application UI
@@ -653,7 +706,6 @@ def main():
     
     # Check if we have an environment API key
     has_env_key = bool(os.getenv("OPENAI_API_KEY"))
-    
     
     # API key input
     api_key_input = st.sidebar.text_input("Enter your OpenAI API Key (ENV Key found)" if has_env_key else "Enter your OpenAI API Key", 
@@ -680,12 +732,38 @@ def main():
         st.sidebar.write("Your order is empty.")
 
     # --- Main Chat Interface ---
+    # Use simple path for logo
     st.image("assets/Shake-Shack-Logo.png")
     st.write("Welcome to Shake Shack! Ask me about our menu, place an order, or get help with anything Shake Shack related.")
 
     # API key warning (only if no key is available anywhere)
     if not os.getenv("OPENAI_API_KEY") and not st.session_state.get("openai_api_key"):
         st.warning("⚠️ Please enter your OpenAI API key in the sidebar to use the chat functionality.")
+
+    # Initialize chat message history for LangChain integration
+    msgs = StreamlitChatMessageHistory(key="langchain_messages")
+    
+    # If our session state is empty but LangChain history exists, sync them
+    if not st.session_state.chat_history and msgs.messages:
+        for msg in msgs.messages:
+            st.session_state.chat_history.append({
+                "role": "user" if msg.type == "human" else "assistant",
+                "content": msg.content
+            })
+    
+    # If we have a welcome message in session state but not in LangChain history
+    elif st.session_state.chat_history and not msgs.messages:
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                msgs.add_user_message(msg["content"])
+            else:
+                msgs.add_ai_message(msg["content"])
+    
+    # If both are empty, initialize with welcome message
+    elif not st.session_state.chat_history and not msgs.messages:
+        welcome_msg = "Welcome to Shake Shack! How can I help you today?"
+        msgs.add_ai_message(welcome_msg)
+        st.session_state.chat_history.append({"role": "assistant", "content": welcome_msg})
 
     # Display chat history
     for message in st.session_state.chat_history:
@@ -701,6 +779,8 @@ def main():
         last_message = st.session_state.chat_history[-1] if st.session_state.chat_history else None
         if not last_message or last_message["role"] != "assistant" or last_message["content"] != response:
             st.session_state.chat_history.append({"role": "assistant", "content": response})
+            # Also add to LangChain history
+            msgs.add_ai_message(response)
         
         with st.chat_message("assistant"):
             st.markdown(response)
@@ -710,6 +790,9 @@ def main():
     if user_message:
         # Add user message to chat history
         st.session_state.chat_history.append({"role": "user", "content": user_message})
+        # Also add to LangChain history
+        msgs.add_user_message(user_message)
+        
         with st.chat_message("user"):
             st.markdown(user_message)
         
@@ -719,6 +802,9 @@ def main():
         
         # Add response to chat history
         st.session_state.chat_history.append({"role": "assistant", "content": response})
+        # Also add to LangChain history
+        msgs.add_ai_message(response)
+        
         with st.chat_message("assistant"):
             st.markdown(response)
     
