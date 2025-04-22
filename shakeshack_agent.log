@@ -1,0 +1,21 @@
+2025-04-22 13:58:56,553 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:58:56,603 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 13:58:57,192 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 13:59:24,094 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:24,098 - __main__ - ERROR - Error in general conversation: One input key expected got ['input', 'total_price', 'order', 'menu_info']
+2025-04-22 13:59:33,649 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:33,665 - __main__ - INFO - Classified intent: general_question
+2025-04-22 13:59:53,793 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:53,795 - __main__ - ERROR - Error in general conversation: One input key expected got ['input', 'total_price', 'order', 'menu_info']
+2025-04-22 14:06:38,287 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:38,302 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 14:06:38,829 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 14:06:42,776 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:42,778 - __main__ - ERROR - Error in general conversation: One input key expected got ['total_price', 'input', 'order', 'menu_info']
+2025-04-22 14:06:55,363 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:55,372 - __main__ - INFO - Classified intent: general_question
+2025-04-22 14:17:19,603 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:17:19,609 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 14:17:20,646 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 14:17:25,132 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:17:25,137 - __main__ - ERROR - Error in general conversation: One input key expected got ['total_price', 'input', 'order', 'menu_info']
