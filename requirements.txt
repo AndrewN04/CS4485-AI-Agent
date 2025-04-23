@@ -1,7 +1,7 @@
-streamlit
-openai
-python-dotenv
-langchain
-langchain_community
-pymongo
-uuid
+streamlit>=1.28.0
+openai>=1.1.0
+python-dotenv>=1.0.0
+langchain>=0.0.335
+langchain_openai>=0.0.1
+langchain_community>=0.0.13
+pymongo>=4.5.0

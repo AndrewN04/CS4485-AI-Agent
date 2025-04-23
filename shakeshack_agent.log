@@ -1,0 +1,298 @@
+2025-04-22 13:58:56,553 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:58:56,603 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 13:58:57,192 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 13:59:24,094 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:24,098 - __main__ - ERROR - Error in general conversation: One input key expected got ['input', 'total_price', 'order', 'menu_info']
+2025-04-22 13:59:33,649 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:33,665 - __main__ - INFO - Classified intent: general_question
+2025-04-22 13:59:53,793 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 13:59:53,795 - __main__ - ERROR - Error in general conversation: One input key expected got ['input', 'total_price', 'order', 'menu_info']
+2025-04-22 14:06:38,287 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:38,302 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 14:06:38,829 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 14:06:42,776 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:42,778 - __main__ - ERROR - Error in general conversation: One input key expected got ['total_price', 'input', 'order', 'menu_info']
+2025-04-22 14:06:55,363 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:06:55,372 - __main__ - INFO - Classified intent: general_question
+2025-04-22 14:17:19,603 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:17:19,609 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 14:17:20,646 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 14:17:25,132 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 14:17:25,137 - __main__ - ERROR - Error in general conversation: One input key expected got ['total_price', 'input', 'order', 'menu_info']
+2025-04-22 21:38:30,497 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:38:30,526 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 21:38:31,016 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 21:38:35,142 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:38:35,150 - __main__ - ERROR - Error in general conversation: One input key expected got ['order', 'total_price', 'menu_info', 'input']
+2025-04-22 21:38:49,497 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:38:49,498 - __main__ - INFO - Classified intent: general_question
+2025-04-22 21:38:59,149 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:38:59,153 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 21:38:59,664 - __main__ - ERROR - Error in extract_order_items: ValueError - Missing some input keys: {'"items"'}
+2025-04-22 21:39:02,106 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:39:02,109 - __main__ - ERROR - Error in general conversation: One input key expected got ['order', 'total_price', 'menu_info', 'input']
+2025-04-22 21:49:02,676 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:02,700 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 21:49:05,269 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:05,271 - __main__ - INFO - LLM extraction result: {"items": [{"name": "Vanilla Shake", "quantity": 6}]}
+2025-04-22 21:49:06,689 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:14,014 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:14,021 - __main__ - INFO - Classified intent: general_question
+2025-04-22 21:49:49,842 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:49,877 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 21:49:52,576 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:49:52,584 - __main__ - INFO - LLM extraction result: {"items": [{"name": "ShackBurger", "quantity": 6}]}
+2025-04-22 21:49:53,864 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:50:16,509 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:50:16,512 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 21:50:18,334 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 21:50:18,338 - __main__ - INFO - LLM extraction result: {"items": [{"name": "Vanilla Shake", "quantity": 5}]}
+2025-04-22 21:50:19,522 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:00:37,068 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:00:37,087 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:00:37,126 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:00:37,615 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:00:42,268 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:00:54,750 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:00:54,754 - __main__ - INFO - LLM identified intent: cart_inquiry
+2025-04-22 22:00:54,754 - __main__ - INFO - Classified intent: cart_inquiry
+2025-04-22 22:01:12,224 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:01:12,234 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:01:12,235 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:01:12,759 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:01:17,095 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:13:36,239 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:13:36,252 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:13:36,253 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:13:36,786 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:13:39,541 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:13:51,670 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:13:51,673 - __main__ - INFO - LLM identified intent: cart_inquiry
+2025-04-22 22:13:51,674 - __main__ - INFO - Classified intent: cart_inquiry
+2025-04-22 22:14:25,047 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:14:25,050 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:14:25,050 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:14:25,636 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:14:37,797 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:14:37,805 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:14:37,805 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:14:38,346 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:14:56,262 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 22:14:56,264 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-22 22:14:56,264 - __main__ - INFO - Classified intent: order_placement
+2025-04-22 22:14:56,773 - __main__ - ERROR - Error in extract_order_items: KeyError - 'Input to ChatPromptTemplate is missing variables {\'\\n      "items"\'}.  Expected: [\'\\n      "items"\', \'input\'] Received: [\'input\']\nNote: if you intended {\n      "items"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\n      "items"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-22 22:14:59,429 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:40:59,533 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:40:59,559 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:40:59,560 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:41:31,413 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:41:31,418 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:41:31,419 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:41:45,666 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:41:45,675 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:41:45,675 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:50:07,073 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:50:07,091 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:50:07,091 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:50:09,564 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:50:09,571 - __main__ - INFO - LLM extraction result: Sorry, but your order request is too vague. Please provide the exact names and quantities of the items you want to order.
+2025-04-23 09:50:09,573 - __main__ - ERROR - Error in fallback extraction: 'Input to ChatPromptTemplate is missing variables {\'"name"\'}.  Expected: [\'"name"\', \'input\'] Received: [\'input\']\nNote: if you intended {"name"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{"name"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-23 09:50:22,683 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:50:22,685 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:50:22,685 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:50:48,351 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:50:48,357 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:50:48,357 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:51:02,206 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:51:02,215 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:51:02,215 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:51:17,290 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:51:17,291 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:51:17,291 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:54:35,018 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:54:35,057 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:54:35,057 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:55:02,703 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:55:02,708 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:55:02,708 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:55:19,291 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:55:19,298 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:55:19,298 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:55:34,865 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:55:34,869 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:55:34,869 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:55:48,074 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:55:48,087 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:55:48,087 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:58:00,542 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:58:00,554 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:58:00,554 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 09:58:11,049 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 09:58:11,075 - __main__ - INFO - LLM identified intent: order_placement
+2025-04-23 09:58:11,075 - __main__ - INFO - Classified intent: order_placement
+2025-04-23 10:13:10,735 - database - INFO - MongoDB connection established
+2025-04-23 10:13:10,736 - database - ERROR - Error retrieving menu items: Database objects do not implement truth value testing or bool(). Please compare with None instead: database is not None
+2025-04-23 10:14:48,953 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,953 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,954 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,954 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,955 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,955 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:48,956 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:14:49,315 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:15:09,723 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:15:09,732 - llm - INFO - LLM identified intent: general_question
+2025-04-23 10:15:09,733 - llm - INFO - Classified intent: general_question
+2025-04-23 10:15:10,720 - database - INFO - MongoDB connection established
+2025-04-23 10:15:10,720 - database - ERROR - Error retrieving menu items: Database objects do not implement truth value testing or bool(). Please compare with None instead: database is not None
+2025-04-23 10:15:14,984 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:21:03,250 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:21:03,250 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:21:03,753 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:21:15,092 - database - INFO - MongoDB connection established
+2025-04-23 10:21:40,069 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:21:40,086 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:21:40,086 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:21:44,319 - database - ERROR - Error saving order: Database objects do not implement truth value testing or bool(). Please compare with None instead: database is not None
+2025-04-23 10:21:57,118 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:21:57,126 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:21:57,127 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:22:07,624 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:22:07,626 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:22:07,627 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:22:18,983 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:22:18,987 - llm - INFO - LLM identified intent: quantity_update
+2025-04-23 10:22:18,988 - llm - INFO - Classified intent: quantity_update
+2025-04-23 10:22:19,495 - llm - ERROR - Error in process_quantity_update: KeyError - 'Input to ChatPromptTemplate is missing variables {\'"is_update"\'}.  Expected: [\'"is_update"\', \'current_items\', \'input\'] Received: [\'input\', \'current_items\']\nNote: if you intended {"is_update"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{"is_update"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-23 10:22:24,923 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:22:42,072 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:22:42,078 - llm - INFO - LLM identified intent: cart_inquiry
+2025-04-23 10:22:42,078 - llm - INFO - Classified intent: cart_inquiry
+2025-04-23 10:23:04,165 - database - INFO - MongoDB connections closed
+2025-04-23 10:23:04,165 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,165 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,165 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,166 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,168 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,168 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:04,620 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:23:15,993 - database - INFO - MongoDB connection established
+2025-04-23 10:23:32,270 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:23:32,278 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:23:32,279 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:23:43,900 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:23:43,902 - llm - INFO - LLM identified intent: quantity_update
+2025-04-23 10:23:43,902 - llm - INFO - Classified intent: quantity_update
+2025-04-23 10:23:44,397 - llm - ERROR - Error in process_quantity_update: KeyError - 'Input to ChatPromptTemplate is missing variables {\'"is_update"\'}.  Expected: [\'"is_update"\', \'current_items\', \'input\'] Received: [\'input\', \'current_items\']\nNote: if you intended {"is_update"} to be part of the string and not a variable, please escape it with double curly braces like: \'{{"is_update"}}\'.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_PROMPT_INPUT '
+2025-04-23 10:23:47,645 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:23:58,058 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:23:58,066 - llm - INFO - LLM identified intent: cart_inquiry
+2025-04-23 10:23:58,066 - llm - INFO - Classified intent: cart_inquiry
+2025-04-23 10:27:22,996 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:22,996 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:22,998 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:23,000 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:23,000 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:23,001 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:23,419 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:27:36,358 - database - INFO - MongoDB connection established
+2025-04-23 10:27:49,711 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:27:49,722 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:27:49,722 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:28:03,336 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:28:03,341 - llm - INFO - LLM identified intent: cart_inquiry
+2025-04-23 10:28:03,341 - llm - INFO - Classified intent: cart_inquiry
+2025-04-23 10:28:10,928 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:28:10,932 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:28:10,933 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:28:20,089 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:28:20,090 - llm - INFO - LLM identified intent: quantity_update
+2025-04-23 10:28:20,091 - llm - INFO - Classified intent: quantity_update
+2025-04-23 10:28:22,084 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:28:42,105 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:28:42,152 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:28:42,153 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:29:57,403 - database - INFO - MongoDB connections closed
+2025-04-23 10:29:57,403 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,403 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,403 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,404 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,404 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,404 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,404 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,404 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,405 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,405 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,405 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,405 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,405 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:29:57,801 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:41:58,972 - database - INFO - MongoDB connection established
+2025-04-23 10:42:07,963 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:42:07,974 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:42:07,975 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:43:27,505 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:43:27,517 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:43:27,517 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:48:58,847 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:48:58,849 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:48:58,849 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:48:58,850 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:48:58,850 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:48:59,258 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:51:39,281 - database - INFO - MongoDB connection established
+2025-04-23 10:51:45,111 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:51:45,149 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:51:45,152 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:52:04,271 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:52:04,288 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:52:04,288 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:55:52,199 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:55:52,199 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:55:52,200 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:55:52,201 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:55:52,201 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:55:52,678 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 10:56:07,717 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:56:07,744 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:56:07,745 - llm - INFO - Classified intent: order_placement
+2025-04-23 10:56:08,681 - database - INFO - MongoDB connection established
+2025-04-23 10:57:23,521 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 10:57:23,533 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 10:57:23,534 - llm - INFO - Classified intent: order_placement
+2025-04-23 11:02:25,300 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,301 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,301 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,311 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,312 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,314 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,317 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:25,779 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:02:36,443 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 11:02:36,482 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 11:02:36,484 - llm - INFO - Classified intent: order_placement
+2025-04-23 11:02:37,424 - database - INFO - MongoDB connection established
+2025-04-23 11:22:31,090 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,090 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,091 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,091 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,091 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,092 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,092 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:31,092 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:22:57,697 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 11:22:57,725 - llm - INFO - LLM identified intent: order_placement
+2025-04-23 11:22:57,726 - llm - INFO - Classified intent: order_placement
+2025-04-23 11:22:58,787 - database - INFO - MongoDB connection established
+2025-04-23 11:23:06,961 - database - INFO - MongoDB connections closed
+2025-04-23 11:23:06,961 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:23:06,962 - ui - INFO - Application shutting down, resources cleaned up
+2025-04-23 11:23:07,158 - ui - INFO - Application shutting down, resources cleaned up
