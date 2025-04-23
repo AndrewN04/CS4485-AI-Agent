@@ -114,24 +114,52 @@ def extract_order_items_from_text(user_message):
     # Import here to avoid circular imports
     from menu import find_menu_item
     
+    extracted_items = []
+    processed_items = set()  # Track which items we've already processed
+    
+    # First, try to split the message by "and" and commas to handle multiple items
+    # This handles cases like "I would like fries and a hot dog" or "2 apple juice and 1 chicken bites"
+    raw_message = user_message.lower()
+    # Remove common prefixes
+    for prefix in ["i would like", "i want", "can i get", "can i have", "give me", "may i have"]:
+        if raw_message.startswith(prefix):
+            raw_message = raw_message[len(prefix):].strip()
+    
+    # Split by "and" and commas
+    parts = re.split(r'\s+and\s+|\s*,\s*', raw_message)
+    
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        
+        # Extract quantity if present
+        quantity = 1
+        quantity_match = re.search(r'^(\d+)\s+', part)
+        if quantity_match:
+            quantity = int(quantity_match.group(1))
+            part = part[len(quantity_match.group(0)):].strip()
+        
+        # Remove articles and common words
+        part = re.sub(r'^(?:a |an |the )', '', part)
+        
+        # Try to find the item in the menu
+        menu_item = find_menu_item(part)
+        if menu_item and menu_item["name"] not in processed_items:
+            processed_items.add(menu_item["name"])
+            extracted_items.append({"name": menu_item["name"], "quantity": quantity})
+    
+    # If we found items through the split approach, return them
+    if extracted_items:
+        return extracted_items
+    
+    # If splitting didn't work, try the original pattern matching approach
     # Look for patterns like "I would like a/an [item]" or "I want [quantity] [item]"
     direct_patterns = [
         r"(?:i|get|add|order)?\s*(?:would|want|like|need|have)?\s*(?:to)?(?:get|add|order|have)?\s*(?:an?|some|\d+)?\s*([a-zA-Z\s]+(?:burger|shake|fries|chico|dog|tea|soda|water|coffee|lemonade))",
         r"(?:i|get|add|order)?\s*(?:would|want|like|need)?\s*(\d+)\s*([a-zA-Z\s]+)",
         r"(?:add|give me|get me|get|order)\s*(?:an?|some|\d+)?\s*([a-zA-Z\s]+)"
     ]
-    
-    # First look for direct quantity + item match (e.g., "5 shackburgers")
-    quantity_item_pattern = re.search(r'(\d+)\s+([a-zA-Z\s]+)', user_message.lower())
-    if quantity_item_pattern:
-        quantity = int(quantity_item_pattern.group(1))
-        item_name = quantity_item_pattern.group(2).strip()
-        menu_item = find_menu_item(item_name)
-        if menu_item:
-            return [{"name": menu_item["name"], "quantity": quantity}]
-    
-    extracted_items = []
-    processed_items = set()  # Track which items we've already processed
     
     # Try all patterns
     for pattern in direct_patterns:
@@ -492,7 +520,7 @@ def process_message(user_message):
                 response += "I've added the following to your order:\n\n"
                 
                 for item, quantity in added_items:
-                    response += f"• {quantity}x {item['name']} — ${item['price'] * quantity:.2f}\n"
+                    response += f"- {quantity}x {item['name']} — ${item['price'] * quantity:.2f}  \n"
                 
                 response += f"\n**Your current total is ${st.session_state.total_price:.2f}**"
                 return response
