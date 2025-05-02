@@ -296,3 +296,184 @@
 2025-04-23 11:23:06,961 - ui - INFO - Application shutting down, resources cleaned up
 2025-04-23 11:23:06,962 - ui - INFO - Application shutting down, resources cleaned up
 2025-04-23 11:23:07,158 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:20:09,671 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:20:09,698 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:20:09,699 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:20:10,651 - database - INFO - MongoDB connection established
+2025-05-02 05:20:27,778 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:20:27,780 - llm - INFO - LLM identified intent: remove_item
+2025-05-02 05:20:27,781 - llm - INFO - Classified intent: remove_item
+2025-05-02 05:20:29,116 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:23:05,635 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:23:05,636 - llm - INFO - LLM identified intent: cart_inquiry
+2025-05-02 05:23:05,636 - llm - INFO - Classified intent: cart_inquiry
+2025-05-02 05:36:53,380 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:36:53,380 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:36:53,380 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:36:53,381 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:36:53,871 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:37:06,503 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:37:06,515 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:37:06,516 - llm - INFO - Determined intent: order_placement
+2025-05-02 05:37:07,474 - database - INFO - MongoDB connection established
+2025-05-02 05:37:07,526 - llm - ERROR - Error in process_message: TypeError - string indices must be integers, not 'str'
+2025-05-02 05:37:23,511 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:37:23,516 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:37:23,516 - llm - INFO - Determined intent: order_placement
+2025-05-02 05:37:23,517 - llm - ERROR - Error in process_message: TypeError - string indices must be integers, not 'str'
+2025-05-02 05:41:38,620 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:41:38,621 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:41:39,041 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:42:03,384 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:42:03,409 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:42:03,410 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:42:04,336 - database - INFO - MongoDB connection established
+2025-05-02 05:42:15,254 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:42:15,260 - llm - INFO - LLM identified intent: remove_item
+2025-05-02 05:42:15,261 - llm - INFO - Classified intent: remove_item
+2025-05-02 05:42:50,088 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:42:50,090 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:42:50,090 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:43:41,110 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:43:41,113 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:43:41,114 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:47:22,490 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:47:22,501 - llm - INFO - LLM identified intent: remove_item
+2025-05-02 05:47:22,502 - llm - INFO - Classified intent: remove_item
+2025-05-02 05:55:36,342 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,343 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,343 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,344 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,345 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,345 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,347 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,347 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,348 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,348 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,349 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,350 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,350 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:36,787 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 05:55:53,668 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:55:53,689 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:55:53,690 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:55:54,613 - database - INFO - MongoDB connection established
+2025-05-02 05:56:05,229 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:56:05,234 - llm - INFO - LLM identified intent: remove_item
+2025-05-02 05:56:05,234 - llm - INFO - Classified intent: remove_item
+2025-05-02 05:56:15,850 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:56:15,855 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:56:15,855 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:56:33,102 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:56:33,106 - llm - INFO - LLM identified intent: order_placement
+2025-05-02 05:56:33,106 - llm - INFO - Classified intent: order_placement
+2025-05-02 05:57:07,146 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 05:57:07,148 - llm - INFO - LLM identified intent: remove_item
+2025-05-02 05:57:07,149 - llm - INFO - Classified intent: remove_item
+2025-05-02 06:15:09,250 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,251 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,252 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,252 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,253 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,254 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,254 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,255 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,255 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,256 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:09,673 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:15:19,009 - database - INFO - MongoDB connection established
+2025-05-02 06:15:29,653 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:15:29,679 - llm - INFO - Intent: order_placement
+2025-05-02 06:15:39,442 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:15:39,445 - llm - INFO - Intent: remove_item
+2025-05-02 06:15:52,639 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:15:52,642 - llm - INFO - Intent: order_placement
+2025-05-02 06:16:09,629 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:16:09,635 - llm - INFO - Intent: order_placement
+2025-05-02 06:16:22,710 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:16:22,724 - llm - INFO - Intent: remove_item
+2025-05-02 06:16:43,947 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:16:43,954 - llm - INFO - Intent: order_placement
+2025-05-02 06:16:53,271 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:16:53,275 - llm - INFO - Intent: order_placement
+2025-05-02 06:16:58,743 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:16:58,746 - llm - INFO - Intent: order_placement
+2025-05-02 06:17:05,783 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:17:05,791 - llm - INFO - Intent: order_placement
+2025-05-02 06:17:20,178 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:17:20,185 - llm - INFO - Intent: remove_item
+2025-05-02 06:19:09,174 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:19:09,179 - llm - INFO - Intent: general_question
+2025-05-02 06:19:12,663 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:19:17,493 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:19:17,495 - llm - INFO - Intent: general_question
+2025-05-02 06:19:20,525 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:24:38,142 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,142 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,143 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,144 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,144 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,145 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,146 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,147 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,147 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,147 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,148 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,148 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,149 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,150 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,150 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,151 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,151 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,151 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,152 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,152 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,153 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,153 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,154 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,154 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,155 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,155 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,155 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,156 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,156 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:38,566 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:24:45,624 - database - INFO - MongoDB connection established
+2025-05-02 06:25:12,414 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:25:12,430 - llm - INFO - Intent: general_question
+2025-05-02 06:25:12,431 - llm - INFO - Intent: general_question
+2025-05-02 06:25:51,509 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:25:51,512 - llm - INFO - Intent: order_placement
+2025-05-02 06:25:51,512 - llm - INFO - Intent: order_placement
+2025-05-02 06:27:28,067 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:27:28,075 - llm - INFO - Intent: remove_item
+2025-05-02 06:27:28,076 - llm - INFO - Intent: remove_item
+2025-05-02 06:27:38,017 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:27:38,019 - llm - INFO - Intent: order_placement
+2025-05-02 06:27:38,019 - llm - INFO - Intent: order_placement
+2025-05-02 06:27:51,329 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:27:51,331 - llm - INFO - Intent: order_placement
+2025-05-02 06:27:51,331 - llm - INFO - Intent: order_placement
+2025-05-02 06:28:00,080 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:28:00,083 - llm - INFO - Intent: remove_item
+2025-05-02 06:28:00,084 - llm - INFO - Intent: remove_item
+2025-05-02 06:35:06,760 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,761 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,762 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,763 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,763 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,765 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,767 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,768 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,769 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,769 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,770 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,770 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,771 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,772 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,772 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,773 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,773 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,773 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:06,774 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:35:07,118 - ui - INFO - Application shutting down, resources cleaned up
