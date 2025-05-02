@@ -477,3 +477,84 @@
 2025-05-02 06:35:06,773 - ui - INFO - Application shutting down, resources cleaned up
 2025-05-02 06:35:06,774 - ui - INFO - Application shutting down, resources cleaned up
 2025-05-02 06:35:07,118 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:42:45,971 - database - INFO - MongoDB connection established
+2025-05-02 06:42:54,212 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:42:54,246 - llm - INFO - Intent: general_question
+2025-05-02 06:42:54,246 - llm - INFO - Intent: general_question
+2025-05-02 06:43:58,347 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:43:58,350 - llm - INFO - Intent: general_question
+2025-05-02 06:43:58,351 - llm - INFO - Intent: general_question
+2025-05-02 06:44:04,400 - database - INFO - MongoDB connections closed
+2025-05-02 06:44:04,400 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:44:04,401 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:44:04,910 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:44:25,967 - database - INFO - MongoDB connection established
+2025-05-02 06:44:34,619 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:44:34,633 - llm - INFO - Intent: general_question
+2025-05-02 06:44:34,633 - llm - INFO - Intent: general_question
+2025-05-02 06:44:49,314 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:44:49,315 - llm - INFO - Intent: general_question
+2025-05-02 06:44:49,315 - llm - INFO - Intent: general_question
+2025-05-02 06:45:53,906 - database - INFO - MongoDB connection established
+2025-05-02 06:46:05,916 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:46:05,940 - llm - INFO - Intent: general_question
+2025-05-02 06:46:05,940 - llm - INFO - Intent: general_question
+2025-05-02 06:46:05,949 - __main__ - ERROR - Application error: 2 validation errors for AIMessage
+content.str
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+content.list[union[str,dict[any,any]]]
+  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/list_type
+Traceback (most recent call last):
+  File "C:\Users\Andrew\Desktop\CS4485-AI-Agent\app.py", line 43, in main
+    render_ui()
+  File "C:\Users\Andrew\Desktop\CS4485-AI-Agent\ui.py", line 195, in render_ui
+    handle_user_input(msgs)
+  File "C:\Users\Andrew\Desktop\CS4485-AI-Agent\ui.py", line 167, in handle_user_input
+    msgs.add_ai_message(response)
+  File "C:\Users\Andrew\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\chat_history.py", line 144, in add_ai_message
+    self.add_message(AIMessage(content=message))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrew\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\messages\ai.py", line 184, in __init__
+    super().__init__(content=content, **kwargs)
+  File "C:\Users\Andrew\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\messages\base.py", line 78, in __init__
+    super().__init__(content=content, **kwargs)
+  File "C:\Users\Andrew\AppData\Local\Programs\Python\Python312\Lib\site-packages\langchain_core\load\serializable.py", line 130, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\Andrew\AppData\Local\Programs\Python\Python312\Lib\site-packages\pydantic\main.py", line 214, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for AIMessage
+content.str
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+content.list[union[str,dict[any,any]]]
+  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/list_type
+2025-05-02 06:55:06,534 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:55:06,760 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:55:13,248 - database - INFO - MongoDB connection established
+2025-05-02 06:55:23,434 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:55:23,444 - llm - INFO - Intent: general_question
+2025-05-02 06:55:26,650 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:00,563 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:00,564 - llm - INFO - Intent: order_placement
+2025-05-02 06:56:11,764 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:11,767 - llm - INFO - Intent: order_placement
+2025-05-02 06:56:25,006 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:25,012 - llm - INFO - Intent: remove_item
+2025-05-02 06:56:33,834 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:33,836 - llm - INFO - Intent: general_question
+2025-05-02 06:56:35,981 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 06:56:44,979 - database - INFO - MongoDB connections closed
+2025-05-02 06:56:44,979 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,980 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,980 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,980 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,981 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,981 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,981 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,981 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:44,982 - ui - INFO - Application shutting down, resources cleaned up
+2025-05-02 06:56:45,242 - ui - INFO - Application shutting down, resources cleaned up

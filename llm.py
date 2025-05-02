@@ -15,45 +15,36 @@ from database import get_all_menu_items
 logger = logging.getLogger(__name__)
 
 # ——————————— Pre‑compiled Regex Patterns ———————————
-# Strip leading “I’d like…”, “Can I get…”, etc. (handles both ’ and ')
 PREFIX_RE = re.compile(
     r"^(?:(?:i(?:'|’)?d like(?: a)?|i would like|i want)|can i (?:get|have)|give me|may i have)\b",
     re.IGNORECASE
 )
-# Pull off a leading integer quantity
 QTY_RE = re.compile(r"^(\d+)\s+", re.IGNORECASE)
 
-# Dynamic item‑name matcher built from the current menu
+# Dynamic item‑name matcher
 _menu_items = get_all_menu_items()
 _item_names = sorted([item["name"] for item in _menu_items], key=len, reverse=True)
 ITEM_RE = re.compile(r"\b(" + "|".join(map(re.escape, _item_names)) + r")\b", re.IGNORECASE)
 
 
 def llm_error_handler(default_return=None, error_message=None):
-    """Decorator for handling LLM chain errors consistently."""
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
-                logger.error(f"Error in {func.__name__}: {type(e).__name__} - {e}")
-                msg = str(e)
-                if "Unauthorized" in msg:
-                    return "There seems to be an issue with the API key. Please check that it's valid."
-                if "Connection" in msg or "Timeout" in msg:
-                    return "I'm having trouble connecting to the language model. Please check your connection and try again."
+                logger.error(f"Error in {func.__name__}: {e}")
                 if error_message:
                     return error_message
                 if isinstance(default_return, str):
-                    return f"I'm having trouble processing your request. {default_return}"
+                    return default_return
                 return default_return
         return wrapper
     return decorator
 
 
 def get_llm():
-    """Return a ChatOpenAI instance, preferring session‑state key over environment."""
     key = st.session_state.get("openai_api_key")
     if key:
         return ChatOpenAI(api_key=key, model_name="gpt-4", temperature=0.5)
@@ -64,7 +55,6 @@ def get_llm():
 
 
 def get_conversation_memory():
-    """Get or create a ConversationBufferMemory in session state."""
     if "conversation_memory" not in st.session_state:
         st.session_state.conversation_memory = ConversationBufferMemory(memory_key="chat_history")
     return st.session_state.conversation_memory
@@ -72,7 +62,6 @@ def get_conversation_memory():
 
 @llm_error_handler(default_return="general_question")
 def classify_intent(user_message):
-    """Classify user intent via LLM into one of our known intents."""
     llm = get_llm()
     if not llm:
         return "general_question"
@@ -88,108 +77,85 @@ def classify_intent(user_message):
     """)
     human = HumanMessagePromptTemplate.from_template("{input}")
     chain = ChatPromptTemplate.from_messages([system, human]) | llm
-    intent = chain.invoke({"input": user_message}).content.strip().lower()
-    logger.info(f"Intent: {intent}")
-    return intent
+    return chain.invoke({"input": user_message}).content.strip().lower()
 
 
 @llm_error_handler(default_return=[])
 def extract_order_items_from_text(user_message):
-    """
-    Text‑based extraction using dynamic ITEM_RE:
-      1) Strip ordering prefixes.
-      2) Find all menu‑name matches.
-      3) For each, pull an integer immediately to its left (if any).
-    """
     raw = user_message.strip().lower()
     raw = PREFIX_RE.sub("", raw).strip()
-
-    items = []
-    seen = set()
+    items, seen = [], set()
     for match in ITEM_RE.finditer(raw):
         fragment = match.group(1)
-        menu_item = find_menu_item(fragment)
-        if not menu_item or menu_item["name"] in seen:
-            continue
-        seen.add(menu_item["name"])
-        prefix = raw[: match.start()]
-        m = re.search(r"(\d+)\s*$", prefix)
-        qty = int(m.group(1)) if m else 1
-        items.append({"name": menu_item["name"], "quantity": qty})
-
+        mi = find_menu_item(fragment)
+        if mi and mi["name"] not in seen:
+            seen.add(mi["name"])
+            prefix = raw[:match.start()]
+            m = re.search(r"(\d+)\s*$", prefix)
+            qty = int(m.group(1)) if m else 1
+            items.append({"name": mi["name"], "quantity": qty})
     return items
 
 
 @llm_error_handler(default_return=[])
 def extract_order_items_using_llm(user_message):
-    """LLM‑based fallback extraction (returns list of {"name","quantity"})."""
     llm = get_llm()
     if not llm:
         return []
     system = SystemMessagePromptTemplate.from_template("""
         You are a parser for Shake Shack orders.
-        Extract ALL menu items with their quantities.
-        Respond ONLY as JSON: {"items":[{"name":"ShackBurger","quantity":2},...]}
+        Extract ALL menu items and quantities as JSON.
     """)
     human = HumanMessagePromptTemplate.from_template("{input}")
     chain = ChatPromptTemplate.from_messages([system, human]) | llm
-    raw = chain.invoke({"input": user_message}).content.strip()
-    raw = raw.replace("```json", "").replace("```", "")
+    raw = chain.invoke({"input": user_message}).content
     try:
         data = json.loads(raw)
-        result, seen = [], set()
+        items, seen = [], set()
         for it in data.get("items", []):
             mi = find_menu_item(it.get("name", ""))
             if mi and mi["name"] not in seen:
                 seen.add(mi["name"])
-                result.append({"name": mi["name"], "quantity": it.get("quantity", 1)})
-        return result
-    except Exception as e:
-        logger.error(f"Failed LLM extraction JSON parse: {e}")
+                items.append({"name": mi["name"], "quantity": it.get("quantity", 1)})
+        return items
+    except:
         return []
 
 
 def extract_order_items(user_message):
-    """Combined extractor: try text‑based first, then LLM fallback."""
     items = extract_order_items_from_text(user_message)
     return items or extract_order_items_using_llm(user_message)
 
 
 @llm_error_handler(default_return=(False, None, None))
 def process_quantity_update(user_message):
-    """LLM‑driven quantity‑update detection (returns is_update, name, qty)."""
     llm = get_llm()
     if not llm:
         return False, None, None
     current = ", ".join([i["name"] for i in st.session_state.order])
     system = SystemMessagePromptTemplate.from_template(f"""
-        Current order items: {current}
-        If updating quantity, return JSON:
-        {{"is_update": true, "item_name":"Name", "quantity":2}}
-        Else: {{"is_update": false, "item_name": null, "quantity": null}}
+        Current order: {current}
+        If updating quantity, return JSON with is_update, item_name, quantity.
     """)
     human = HumanMessagePromptTemplate.from_template("{input}")
     chain = ChatPromptTemplate.from_messages([system, human]) | llm
-    raw = chain.invoke({"input": user_message}).content.strip()
-    raw = raw.replace("```json", "").replace("```", "")
+    raw = chain.invoke({"input": user_message}).content
     try:
-        result = json.loads(raw)
-        return result.get("is_update", False), result.get("item_name"), result.get("quantity")
-    except Exception as e:
-        logger.error(f"Qty update JSON parse error: {e}")
+        res = json.loads(raw)
+        return res.get("is_update", False), res.get("item_name"), res.get("quantity")
+    except:
         return False, None, None
 
 
 @llm_error_handler(default_return=None)
 def extract_item_to_remove(user_message):
-    """LLM‑based extraction of a single item name to remove."""
     llm = get_llm()
     if not llm:
         return None
     current = ", ".join([i["name"] for i in st.session_state.order])
     system = SystemMessagePromptTemplate.from_template(f"""
-        Current order items: {current}
-        Extract ONLY the name of the item to remove.
+        Current order: {current}
+        Extract only the name of the item to remove.
     """)
     human = HumanMessagePromptTemplate.from_template("{input}")
     chain = ChatPromptTemplate.from_messages([system, human]) | llm
@@ -198,7 +164,7 @@ def extract_item_to_remove(user_message):
 
 @llm_error_handler(default_return=None)
 def extract_price_inquiry_item(user_message):
-    """Extract menu item for a price inquiry, direct or via LLM fallback."""
+    # direct lookup
     for it in get_all_menu_items():
         if it["name"].lower() in user_message.lower():
             return it
@@ -206,7 +172,7 @@ def extract_price_inquiry_item(user_message):
     if not llm:
         return None
     system = SystemMessagePromptTemplate.from_template("""
-        Extract ONLY the name of the menu item whose price is asked.
+        Extract ONLY the name of the menu item being asked about for price inquiry.
     """)
     human = HumanMessagePromptTemplate.from_template("{input}")
     chain = ChatPromptTemplate.from_messages([system, human]) | llm
@@ -214,16 +180,21 @@ def extract_price_inquiry_item(user_message):
     return find_menu_item(name)
 
 
-@llm_error_handler(default_return="I'm having trouble processing your request. Please try again.")
+@llm_error_handler(default_return="I'm having trouble processing your request.")
 def general_conversation(user_message, order_str, total_price, menu_info):
-    """Handle general Shake Shack Q&A via LLM prompts."""
     llm = get_llm()
     if not llm:
-        return "Please provide your OpenAI API key in the sidebar."
+        return "Please provide your API key."
     system = SystemMessagePromptTemplate.from_template(f"""
         You are a knowledgeable Shake Shack customer support agent.
-        You only answer questions related to Shake Shack menu, orders, prices, ingredients, or recommendations.
-        If a user asks something unrelated to Shake Shack, politely redirect them: "I'm here to help with Shake Shack-related questions—menu, orders, and recommendations. Please ask me something related to Shake Shack."
+        Answer only Shake Shack-related questions about the menu, orders, prices, or recommendations, if not related, politely redirect to the customer to ask about one of those options.
+        If asked about store hours, locations, nutrition/allergens, catering, contact, or app/rewards,
+        provide the appropriate Shake Shack URL:
+        - Store hours & locations: https://www.shakeshack.com/locations/
+        - Allergies & nutrition: https://www.shakeshack.com/allergies-nutrition/
+        - Catering & large orders: https://www.shakeshack.com/catering/
+        - Customer service: https://www.shakeshack.com/contact-us/
+        - App & rewards program: https://www.shakeshack.com/app/
         Order: {order_str} | Total: ${total_price:.2f}
         Menu Info:
         {menu_info}
@@ -233,41 +204,29 @@ def general_conversation(user_message, order_str, total_price, menu_info):
     return chain.invoke({"input": user_message}).content
 
 
-@llm_error_handler(default_return="I'm having trouble processing your request. Please try again.",
-                   error_message="I'm having trouble connecting to our systems. Please try again in a moment.")
+@llm_error_handler(default_return="I'm having trouble processing your request.", error_message="Connection issue.")
 def process_message(user_message):
-    """Main routing for user messages to specific handlers or custom logic."""
     llm = get_llm()
     if not llm:
-        return "Please provide your OpenAI API key in the sidebar."
+        return "Please provide your OpenAI API key."
     if "menu" in user_message.lower():
         return display_formatted_menu()
 
-    # Pre‑intent overrides
     user_lower = user_message.lower()
     # Recommendation requests
-    if any(kw in user_lower for kw in ("recommend", "suggest", "what should i", "what's good", "best")):
+    if any(kw in user_lower for kw in ("recommend", "suggest", "what should i", "best")):
         items = get_all_menu_items()
         burgers = [i for i in items if i["category"].lower() == "burgers"]
         chicken = [i for i in items if "chicken" in i["name"].lower()]
         choices = []
-        if chicken: choices.append(random.choice(chicken))
-        if burgers: choices.append(random.choice(burgers))
-        if not choices: choices = items
-        rec = random.choice(choices)
-        return f"I'd recommend our **{rec['name']}** — priced at ${rec['price']:.2f} with about {rec['calories']} calories. It's one of our popular {rec['category']}!"
-    # Ingredient info requests
-    if any(kw in user_lower for kw in ("ingredient", "ingredients", "contain", "contains", "allergen")):
-        items = get_all_menu_items()
-        mi = next((i for i in items if i["name"].lower() in user_lower), None)
-        if mi:
-            if "ingredients" in mi:
-                return f"The {mi['name']} contains: {', '.join(mi['ingredients'])}."
-            else:
-                return f"Sorry, I don't have detailed ingredient info for **{mi['name']}**, but it's made fresh with high-quality ingredients."
-        return "Which Shake Shack item would you like ingredient information for?"
+        if chicken:
+            choices.append(random.choice(chicken))
+        if burgers:
+            choices.append(random.choice(burgers))
+        rec = random.choice(choices) if choices else random.choice(items)
+        return f"I'd recommend our **{rec['name']}** — ${rec['price']:.2f}, about {rec['calories']} cal."
 
-    # Intent‑based handling
+    # Intent-based handling
     intent = classify_intent(user_message)
     logger.info(f"Intent: {intent}")
 
@@ -296,15 +255,15 @@ def process_message(user_message):
                 st.session_state.update_sidebar = True
                 resp = "**Order Added Successfully**\n\nI've added:\n"
                 for mi, q in added:
-                    resp += f"- {q}x {mi['name']} — ${mi['price'] * q:.2f}  \n"
-                resp += f"\n**Your current total is ${st.session_state.total_price:.2f}**"
+                    resp += f"- {q}x {mi['name']} — ${mi['price']*q:.2f}  \n"
+                resp += f"\n**Total: ${st.session_state.total_price:.2f}**"
                 return resp
         return "I couldn't identify any items to add. Please use exact menu names."
 
     if intent == "price_inquiry":
         pi = extract_price_inquiry_item(user_message)
         if pi:
-            return f"{pi['name']} costs ${pi['price']:.2f}, {pi['calories']} calories."
+            return f"{pi['name']} costs ${pi['price']:.2f}, {pi['calories']} cal."
         return "Which item price would you like to know?"
 
     if intent == "remove_item":
@@ -321,13 +280,11 @@ def process_message(user_message):
                     responses.append(remove_from_order(name))
         return "\n\n".join(responses) if responses else "I couldn't find those items in your order."
 
-    # Fallback: direct shack‑related general questions, else redirect
+    # Fallback to general conversation
     order_items = [
-        f"{i.get('quantity',1)}x {i['name']}" if i.get('quantity',1) > 1 else i['name']
+        f"{i.get('quantity',1)}x {i['name']}" if i.get('quantity',1)>1 else i['name']
         for i in st.session_state.order
     ]
     order_str = ", ".join(order_items) if order_items else "None"
     menu_info = prepare_menu_info()
-    if ITEM_RE.search(user_lower):
-        return general_conversation(user_message, order_str, st.session_state.total_price, menu_info)
-    return "I'm here to help with Shake Shack-related questions—menu, orders, ingredients, and recommendations. How can I assist you?"
+    return general_conversation(user_message, order_str, st.session_state.total_price, menu_info)
